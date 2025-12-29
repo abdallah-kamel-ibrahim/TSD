@@ -3,31 +3,103 @@
 <head>
 <meta charset="UTF-8">
 <title>Admin Panel</title>
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; }
+input, textarea { display:block; margin: 10px 0; width:300px; }
+button { padding:10px 20px; margin:5px 0; }
+#dashboard { display:none; }
+</style>
 </head>
 <body>
-<h2>Admin Panel - Add Product</h2>
 
-<p>⚠️ بعد إضافة المنتجات، احفظ products.json وادفعها على GitHub</p>
+<div id="login-section">
+  <h2>Login</h2>
+  <input type="text" id="username" placeholder="Username">
+  <input type="password" id="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+</div>
 
-<input type="text" id="title" placeholder="Product Name">
-<input type="text" id="price" placeholder="Price">
-<input type="text" id="image" placeholder="Image URL">
-<textarea id="description" placeholder="Description"></textarea>
-<button onclick="addProduct()">Add Product</button>
+<div id="dashboard">
+  <h2>Admin Dashboard</h2>
+  <h3>Add Product</h3>
+  <input type="text" id="title" placeholder="Product Name">
+  <input type="text" id="price" placeholder="Price">
+  <input type="text" id="image" placeholder="Image URL">
+  <textarea id="description" placeholder="Description"></textarea>
+  <button onclick="addProduct()">Add Product</button>
+
+  <h3>Existing Products</h3>
+  <div id="product-list"></div>
+</div>
 
 <script>
-function addProduct() {
-  const title = document.getElementById('title').value;
-  const price = document.getElementById('price').value;
-  const image = document.getElementById('image').value;
-  const description = document.getElementById('description').value;
+const users = [
+  { username: "employee1", password: "123456" },
+  { username: "employee2", password: "abcdef" }
+];
 
+function login(){
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const user = users.find(u=> u.username===username && u.password===password);
+  if(user){
+    localStorage.setItem("loggedIn","true");
+    alert("Login successful!");
+    document.getElementById("login-section").style.display="none";
+    document.getElementById("dashboard").style.display="block";
+    loadProducts();
+  } else {
+    alert("Username or password incorrect");
+  }
+}
+
+function loadProducts(){
+  const list = document.getElementById("product-list");
+  list.innerHTML = "";
   let products = JSON.parse(localStorage.getItem('products') || '[]');
+  products.forEach((p,index)=>{
+    list.innerHTML += `
+      <div>
+        <strong>${p.title}</strong> - ${p.price} 
+        <button onclick="editProduct(${index})">Edit</button>
+        <button onclick="deleteProduct(${index})">Delete</button>
+      </div>
+    `;
+  });
+}
+
+function addProduct(){
+  const title=document.getElementById("title").value;
+  const price=document.getElementById("price").value;
+  const image=document.getElementById("image").value;
+  const description=document.getElementById("description").value;
+
+  if(!title||!price||!image||!description){ alert("Fill all fields"); return; }
+
+  let products=JSON.parse(localStorage.getItem('products') || '[]');
   products.push({title, price, image, description});
   localStorage.setItem('products', JSON.stringify(products));
-
-  alert('Product added! الآن عدل products.json وادفعه على GitHub');
+  alert("Product added!");
+  document.getElementById("title").value="";
+  document.getElementById("price").value="";
+  document.getElementById("image").value="";
+  document.getElementById("description").value="";
+  loadProducts();
 }
-</script>
-</body>
-</html>
+
+function editProduct(index){
+  let products=JSON.parse(localStorage.getItem('products') || '[]');
+  const p = products[index];
+  const newTitle = prompt("Product Name:", p.title);
+  const newPrice = prompt("Price:", p.price);
+  const newImage = prompt("Image URL:", p.image);
+  const newDesc = prompt("Description:", p.description);
+  products[index]={title:newTitle, price:newPrice, image:newImage, description:newDesc};
+  localStorage.setItem('products', JSON.stringify(products));
+  loadProducts();
+}
+
+function deleteProduct(index){
+  let products=JSON.parse(localStorage.getItem('products') || '[]');
+  if(confirm("Delete this product?")){
+    products.splice(index,1);
