@@ -12,23 +12,26 @@
 </div>
 
 <script>
-let products = JSON.parse(localStorage.getItem('products') || '[]');
-const container = document.getElementById('products');
-
-products.forEach(p => {
-  container.innerHTML += `
-    <div class="col-md-4 mb-4">
-      <div class="card h-100">
-        <img src="${p.image}" class="card-img-top">
-        <div class="card-body">
-          <h5>${p.title}</h5>
-          <p>${p.description}</p>
-          <strong>${p.price}</strong>
+fetch('products.json')
+.then(res => res.json())
+.then(products => {
+  const container = document.getElementById('products');
+  products.forEach(p => {
+    container.innerHTML += `
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          <img src="${p.image}" class="card-img-top">
+          <div class="card-body">
+            <h5>${p.title}</h5>
+            <p>${p.description}</p>
+            <strong>${p.price}</strong>
+          </div>
         </div>
       </div>
-    </div>
-  `;
+    `;
+  });
 });
 </script>
 </body>
 </html>
+
