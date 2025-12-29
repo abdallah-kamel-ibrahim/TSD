@@ -1,0 +1,113 @@
+:root {
+  --primary-blue: #3b7fb6;
+  --accent-red: #b22222;
+  --dark-text: #333;
+  --light-bg: #f5f8fb;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  color: var(--dark-text);
+  padding-top: 70px;
+  background-color: #fff;
+}
+
+.navbar-brand img.logo {
+  height: 65px;
+  max-width: 200px;
+  width: auto;
+}
+
+.navbar {
+  padding: 10px 0;
+}
+
+/* Hero Section */
+.hero {
+  height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--light-bg);
+  flex-direction: column;
+}
+
+.hero-title {
+  font-size: 4rem;
+  font-weight: 700;
+}
+
+.hero-t {
+  color: #b22222; /* الأحمر */
+}
+
+.hero-s {
+  color: #5a3e36; /* الحمار الغامق/البني */
+}
+
+.hero-subtitle {
+  color: #888888; /* الرمادي */
+  font-size: 2rem;
+  margin-top: 10px;
+}
+
+/* Hero Section */
+/* Hero Section */
+.hero {
+  height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--light-bg);
+  flex-direction: column;
+}
+
+.hero-title {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--primary-blue);
+}
+
+.hero-subtitle {
+  color: #555555;
+  font-size: 1.5rem;
+  margin-top: 10px;
+}
+
+.btn-primary {
+  background: var(--primary-blue);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: var(--accent-red);
+}
+
+section h2 {
+  color: var(--primary-blue);
+  font-weight: 700;
+}
+
+.card {
+  border: none;
+}
+
+.card img {
+  height: 250px;
+  object-fit: cover;
+}
+
+form input,
+form textarea {
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+form button {
+  background: var(--primary-blue);
+  border: none;
+}
+
+form button:hover {
+  background: var(--accent-red);
+}
