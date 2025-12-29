@@ -1,1 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+<style>
+body { font-family: Arial; padding: 20px; }
+input, textarea { display: block; margin: 10px 0; width: 300px; }
+button { padding: 10px 20px; }
+</style>
+</head>
+<body>
+<h2>Admin Panel - Add Product</h2>
 
+<input type="text" id="title" placeholder="Product Name">
+<input type="text" id="price" placeholder="Price">
+<input type="text" id="image" placeholder="Image URL">
+<textarea id="description" placeholder="Description"></textarea>
+<button onclick="addProduct()">Add Product</button>
+
+<script>
+function addProduct() {
+  const title = document.getElementById('title').value;
+  const price = document.getElementById('price').value;
+  const image = document.getElementById('image').value;
+  const description = document.getElementById('description').value;
+
+  let products = JSON.parse(localStorage.getItem('products') || '[]');
+  products.push({title, price, image, description});
+  localStorage.setItem('products', JSON.stringify(products));
+
+  alert('Product added successfully!');
+}
+</script>
+
+</body>
+</html>
