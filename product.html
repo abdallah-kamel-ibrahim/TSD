@@ -1,1 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Product Details</title>
+</head>
+<body>
+<h2 id="product-title"></h2>
+<img id="product-img" src="" width="200">
+<p id="product-desc"></p>
+<strong id="product-price"></strong><br>
+<a id="order-btn" href="">Order Now</a>
 
+<script>
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+let products = JSON.parse(localStorage.getItem('products') || '[]');
+if(products[id]){
+  const p = products[id];
+  document.getElementById("product-title").innerText = p.title;
+  document.getElementById("product-price").innerText = p.price;
+  document.getElementById("product-desc").innerText = p.description;
+  document.getElementById("product-img").src = p.image;
+  document.getElementById("order-btn").href = `contact.html?product=${encodeURIComponent(p.title)}`;
+} else {
+  document.getElementById("product-title").innerText = "Product not found";
+}
+</script>
+</body>
+</html>
