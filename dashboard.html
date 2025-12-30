@@ -4,71 +4,22 @@
 <meta charset="UTF-8">
 <title>Admin Dashboard - TSD</title>
 <style>
-  /* Reset */
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
-
-  body { background: #f4f4f4; display: flex; height: 100vh; }
-
-  /* Sidebar */
-  .sidebar {
-    width: 220px;
-    background: #c62828;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-  }
-  .sidebar h2 { margin-bottom: 40px; font-size: 24px; }
-  .sidebar button {
-    padding: 10px;
-    margin-top: 10px;
-    border: none;
-    background: #b71c1c;
-    color: #fff;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-
-  /* Main content */
-  .main {
-    flex: 1;
-    padding: 30px;
-    overflow-y: auto;
-  }
-
-  .main h2 { margin-bottom: 15px; color: #c62828; }
-
-  input, textarea, button {
-    width: 100%;
-    padding: 10px;
-    margin: 5px 0;
-  }
-
-  button.add-btn {
-    background: #c62828;
-    color: white;
-    border: none;
-    cursor: pointer;
-    margin-bottom: 20px;
-  }
-
-  .product-card {
-    border: 1px solid #ccc;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    background: #fff;
-    transition: transform 0.2s;
-  }
-  .product-card:hover { transform: translateY(-5px); }
-  .product-card img { width: 80px; height: 80px; object-fit: cover; border-radius: 5px; }
-  .product-info { flex: 1; }
-  .product-info h3 { color: #c62828; margin-bottom: 5px; }
-  .product-info p { margin-bottom: 5px; }
-  .product-card button { background: #b71c1c; color: #fff; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif;}
+body{display:flex;height:100vh;background:#f4f4f4;}
+.sidebar{width:220px;background:#c62828;color:#fff;padding:20px;display:flex;flex-direction:column;}
+.sidebar h2{margin-bottom:40px;font-size:24px;}
+.sidebar button{padding:10px;margin-top:10px;border:none;background:#b71c1c;color:#fff;border-radius:5px;cursor:pointer;}
+.main{flex:1;padding:30px;overflow-y:auto;}
+.main h2{margin-bottom:15px;color:#c62828;}
+input,textarea,button{width:100%;padding:10px;margin:5px 0;}
+button.add-btn{background:#c62828;color:white;border:none;cursor:pointer;margin-bottom:20px;}
+.product-card{border:1px solid #ccc;padding:15px;margin-bottom:15px;border-radius:8px;display:flex;align-items:center;gap:15px;background:#fff;transition:transform 0.2s;}
+.product-card:hover{transform:translateY(-5px);}
+.product-card img{width:80px;height:80px;object-fit:cover;border-radius:5px;}
+.product-info{flex:1;}
+.product-info h3{color:#c62828;margin-bottom:5px;}
+.product-info p{margin-bottom:5px;}
+.product-card button{background:#b71c1c;color:#fff;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;}
 </style>
 </head>
 <body>
@@ -83,7 +34,7 @@
   <input id="name" placeholder="Product Name">
   <input id="price" placeholder="Price">
   <textarea id="desc" placeholder="Description"></textarea>
-  <input id="img" placeholder="Image URL">
+  <input id="imgFile" type="file">
   <button class="add-btn" onclick="addProduct()">Add Product</button>
 
   <h2>All Products</h2>
@@ -94,6 +45,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-firestore.js";
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-auth.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-storage.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBZcTVzgVnM2Q9C0DelAKmqcUjsPq8zh58",
@@ -107,43 +59,32 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+const storage = getStorage(app);
 
-// تحقق الأدمن
-if (localStorage.getItem("admin") !== "true") {
-  alert("Access denied! Please login first.");
-  window.location = "admin.html";
-}
+if(localStorage.getItem("admin")!=="true"){ alert("Access denied!"); window.location="../admin.html"; }
 
-// Logout
-window.logout = function() {
-  signOut(auth).then(() => {
-    localStorage.removeItem("admin");
-    window.location = "admin.html";
-  });
-}
+window.logout = function(){ signOut(auth).then(()=>{ localStorage.removeItem("admin"); window.location="../admin.html"; }); }
 
-// Add Product
-window.addProduct = async function() {
-  const name = document.getElementById("name").value;
-  const price = document.getElementById("price").value;
-  const desc = document.getElementById("desc").value;
-  const img = document.getElementById("img").value;
-
-  if(!name || !price) return alert("Name and Price required");
-
-  await addDoc(collection(db, "products"), { name, price, description: desc, image: img });
+window.addProduct = async function(){
+  const name=document.getElementById("name").value;
+  const price=document.getElementById("price").value;
+  const desc=document.getElementById("desc").value;
+  const file=document.getElementById("imgFile").files[0];
+  if(!name||!price||!file)return alert("Name, Price & Image required");
+  const storageRef = ref(storage, `products/${file.name}`);
+  await uploadBytes(storageRef, file);
+  const imgURL = await getDownloadURL(storageRef);
+  await addDoc(collection(db,"products"),{name,price,description:desc,image:imgURL});
   loadProducts();
 }
 
-// Load Products
-async function loadProducts() {
-  const list = document.getElementById("productList");
-  list.innerHTML = "";
-  const snapshot = await getDocs(collection(db, "products"));
-  snapshot.forEach(docSnap => {
-    const data = docSnap.data();
-    const id = docSnap.id;
-    list.innerHTML += `
+async function loadProducts(){
+  const list=document.getElementById("productList");
+  list.innerHTML="";
+  const snapshot=await getDocs(collection(db,"products"));
+  snapshot.forEach(docSnap=>{
+    const data=docSnap.data(); const id=docSnap.id;
+    list.innerHTML+=`
       <div class="product-card">
         <img src="${data.image}" alt="${data.name}">
         <div class="product-info">
@@ -157,13 +98,7 @@ async function loadProducts() {
   });
 }
 
-// Delete Product
-window.deleteProduct = async function(id) {
-  await deleteDoc(doc(db, "products", id));
-  loadProducts();
-}
-
-// Initial load
+window.deleteProduct = async function(id){ await deleteDoc(doc(db,"products",id)); loadProducts(); }
 loadProducts();
 </script>
 
