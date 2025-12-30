@@ -84,7 +84,7 @@ window.addProduct = async function(){
 
   if(!name || !price || !file) return alert("Name, Price & Image required");
 
-  const storageRef = ref(storage, `products/${file.name}`);
+  const storageRef = ref(storage, `Database/${file.name}`);
   await uploadBytes(storageRef, file);
   const imgURL = await getDownloadURL(storageRef);
 
