@@ -76,31 +76,29 @@ window.logout = function(){
 }
 
 // Add product
-window.addProduct = async function(){
+async function addProduct() {
   const name = document.getElementById("name").value;
   const price = document.getElementById("price").value;
   const desc = document.getElementById("desc").value;
   const file = document.getElementById("imgFile").files[0];
-
   if(!name || !price || !file) return alert("Name, Price & Image required");
 
-  const storageRef = ref(storage, `Database/${file.name}`);
+  const fileName = file.name.split("\\").pop(); // فقط اسم الملف
+  const storageRef = ref(storage, `Database/${fileName}`);
   await uploadBytes(storageRef, file);
   const imgURL = await getDownloadURL(storageRef);
 
-  try {
-    await addDoc(collection(db, "Database"), {
-      name,
-      price,
-      description: desc,
-      image: imgURL
-    });
-    alert("Product added successfully!");
-    loadProducts();
-  } catch(err){
-    alert("Error adding product: " + err.message);
-  }
+  await addDoc(collection(db, "Database"), {
+    name,
+    price,
+    description: desc,
+    image: imgURL
+  });
+
+  alert("Product added successfully!");
+  loadProducts();
 }
+
 
 // Load products list
 async function loadProducts(){
