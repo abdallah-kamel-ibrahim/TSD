@@ -1,0 +1,71 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-firestore.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "totalsolutiondiagnostic",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_ID",
+  appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// Logout function
+window.logout = function() {
+  signOut(auth).then(() => {
+    localStorage.removeItem("admin");
+    window.location = "admin.html";
+  });
+}
+
+// Add Product
+window.addProduct = async function() {
+  const name = document.getElementById("name").value;
+  const price = document.getElementById("price").value;
+  const desc = document.getElementById("desc").value;
+  const img = document.getElementById("img").value;
+
+  if(!name || !price) return alert("Name and Price required");
+
+  await addDoc(collection(db, "products"), {
+    name, price, description: desc, image: img
+  });
+
+  alert("Product Added");
+  loadProducts();
+}
+
+// Load Products
+async function loadProducts() {
+  const list = document.getElementById("productList");
+  list.innerHTML = "";
+  const snapshot = await getDocs(collection(db, "products"));
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    const id = docSnap.id;
+    list.innerHTML += `
+      <div style="border:1px solid #ccc;padding:10px;margin:5px;">
+        <h3>${data.name}</h3>
+        <p>${data.price}</p>
+        <p>${data.description}</p>
+        <img src="${data.image}" style="width:100px"><br>
+        <button onclick="deleteProduct('${id}')">Delete</button>
+      </div>
+    `;
+  });
+}
+
+// Delete Product
+window.deleteProduct = async function(id) {
+  await deleteDoc(doc(db, "products", id));
+  alert("Deleted");
+  loadProducts();
+}
+
+// Initial load
+loadProducts();
