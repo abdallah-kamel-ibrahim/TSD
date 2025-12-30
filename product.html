@@ -1,0 +1,38 @@
+<div id="productDetails"></div>
+<button onclick="goContact()">Contact Us</button>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBZcTVzgVnM2Q9C0DelAKmqcUjsPq8zh58",
+  authDomain: "totalsolutiondiagnostic-ffe97.firebaseapp.com",
+  projectId: "totalsolutiondiagnostic-ffe97",
+  storageBucket: "totalsolutiondiagnostic-ffe97.firebasestorage.app",
+  messagingSenderId: "850936511386",
+  appId: "1:850936511386:web:11f3ac64e16d8ec49c9823"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const container = document.getElementById("productDetails");
+const params = new URLSearchParams(window.location.search);
+const productId = params.get("id");
+
+async function loadProduct(){
+  const docSnap = await getDoc(doc(db,"products",productId));
+  if(docSnap.exists()){
+    const data = docSnap.data();
+    container.innerHTML = `
+      <img src="${data.image}" style="width:300px"/>
+      <h2>${data.name}</h2>
+      <p>Price: ${data.price}</p>
+      <p>${data.description}</p>
+    `;
+  } else container.innerHTML="<p>Product not found</p>";
+}
+
+window.goContact = function(){ window.location = "contact.html"; }
+loadProduct();
+</script>
