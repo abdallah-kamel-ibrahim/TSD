@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard - TSD</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<h1>Admin Dashboard</h1>
+<button onclick="logout()">Logout</button>
+
+<h2>Add Product</h2>
+<input id="name" placeholder="Product Name"><br>
+<input id="price" placeholder="Price"><br>
+<textarea id="desc" placeholder="Description"></textarea><br>
+<input id="img" placeholder="Image URL"><br>
+<button onclick="addProduct()">Add Product</button>
+
+<h2>All Products</h2>
+<div id="productList"></div>
+
+<script type="module" src="../js/admin.js"></script>
+</body>
+</html>
