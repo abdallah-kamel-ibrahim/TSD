@@ -89,7 +89,7 @@ window.addProduct = async function(){
   const imgURL = await getDownloadURL(storageRef);
 
   try {
-    await addDoc(collection(db, "products"), {
+    await addDoc(collection(db, "Database"), {
       name,
       price,
       description: desc,
@@ -106,7 +106,7 @@ window.addProduct = async function(){
 async function loadProducts(){
   const list = document.getElementById("productList");
   list.innerHTML = "";
-  const snapshot = await getDocs(collection(db,"products"));
+  const snapshot = await getDocs(collection(db,"Database"));
   snapshot.forEach(docSnap => {
     const data = docSnap.data();
     const id = docSnap.id;
@@ -126,7 +126,7 @@ async function loadProducts(){
 
 // Delete product
 window.deleteProduct = async function(id){
-  await deleteDoc(doc(db,"products",id));
+  await deleteDoc(doc(db,"Database",id));
   loadProducts();
 }
 
