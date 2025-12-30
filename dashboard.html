@@ -1,23 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Dashboard - TSD</title>
-  <link rel="stylesheet" href="../css/style.css">
+<meta charset="UTF-8">
+<title>Admin Dashboard - TSD</title>
+<style>
+  /* Reset */
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+
+  body { background: #f4f4f4; display: flex; height: 100vh; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 220px;
+    background: #c62828;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+  .sidebar h2 { margin-bottom: 40px; font-size: 24px; }
+  .sidebar button {
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    background: #b71c1c;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+
+  /* Main content */
+  .main {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+  }
+
+  .main h2 { margin-bottom: 15px; color: #c62828; }
+
+  input, textarea, button {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+  }
+
+  button.add-btn {
+    background: #c62828;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+
+  .product-card {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #fff;
+    transition: transform 0.2s;
+  }
+  .product-card:hover { transform: translateY(-5px); }
+  .product-card img { width: 80px; height: 80px; object-fit: cover; border-radius: 5px; }
+  .product-info { flex: 1; }
+  .product-info h3 { color: #c62828; margin-bottom: 5px; }
+  .product-info p { margin-bottom: 5px; }
+  .product-card button { background: #b71c1c; color: #fff; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+</style>
 </head>
 <body>
-<h1>Admin Dashboard</h1>
-<button onclick="logout()">Logout</button>
 
-<h2>Add Product</h2>
-<input id="name" placeholder="Product Name"><br>
-<input id="price" placeholder="Price"><br>
-<textarea id="desc" placeholder="Description"></textarea><br>
-<input id="img" placeholder="Image URL"><br>
-<button onclick="addProduct()">Add Product</button>
+<div class="sidebar">
+  <h2>TSD Admin</h2>
+  <button onclick="logout()">Logout</button>
+</div>
 
-<h2>All Products</h2>
-<div id="productList"></div>
+<div class="main">
+  <h2>Add Product</h2>
+  <input id="name" placeholder="Product Name">
+  <input id="price" placeholder="Price">
+  <textarea id="desc" placeholder="Description"></textarea>
+  <input id="img" placeholder="Image URL">
+  <button class="add-btn" onclick="addProduct()">Add Product</button>
+
+  <h2>All Products</h2>
+  <div id="productList"></div>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.0/firebase-app.js";
@@ -37,7 +108,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// تحقق إن الأدمن مسجل دخول
+// تحقق الأدمن
 if (localStorage.getItem("admin") !== "true") {
   alert("Access denied! Please login first.");
   window.location = "admin.html";
@@ -60,11 +131,7 @@ window.addProduct = async function() {
 
   if(!name || !price) return alert("Name and Price required");
 
-  await addDoc(collection(db, "products"), {
-    name, price, description: desc, image: img
-  });
-
-  alert("Product Added");
+  await addDoc(collection(db, "products"), { name, price, description: desc, image: img });
   loadProducts();
 }
 
@@ -77,11 +144,13 @@ async function loadProducts() {
     const data = docSnap.data();
     const id = docSnap.id;
     list.innerHTML += `
-      <div style="border:1px solid #ccc;padding:10px;margin:5px;">
-        <h3>${data.name}</h3>
-        <p>${data.price}</p>
-        <p>${data.description}</p>
-        <img src="${data.image}" style="width:100px"><br>
+      <div class="product-card">
+        <img src="${data.image}" alt="${data.name}">
+        <div class="product-info">
+          <h3>${data.name}</h3>
+          <p>Price: ${data.price}</p>
+          <p>${data.description}</p>
+        </div>
         <button onclick="deleteProduct('${id}')">Delete</button>
       </div>
     `;
@@ -97,5 +166,6 @@ window.deleteProduct = async function(id) {
 // Initial load
 loadProducts();
 </script>
+
 </body>
 </html>
